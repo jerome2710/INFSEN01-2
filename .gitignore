@@ -204,3 +204,5 @@ $RECYCLE.BIN/
 =======
 #####
 >>>>>>> 74dee526fb30a23fc4996102eb5586a572582314
+*.sln
+*.userprefs
