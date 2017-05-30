@@ -38,90 +38,143 @@ namespace GUIapp {
         }
     }
 
-    public class Point {
-        public Point(float x, float y) {
-            this.X = x;
-            this.Y = y;
-        }
-
-        public float X { get; set; }
-
-        public float Y { get; set; }
+    public interface Iterator<T> {
+        Option<T> GetNext();
+        Option<T> GetCurrent();
+        void Reset();
     }
 
+    public class List<T> : Iterator<T> {
+        private List<T> list;
+        private int current = -1;
 
-
-
-
-
-
-    public interface Updateable {
-        //MISSING CODE HERE
-    }
-
-    public interface Drawable { void Draw(DrawVisitor visitor); }
-
-
-    public interface DrawVisitor {
-        void DrawButton(Button element);
-        void DrawLabel(Label element);
-        void DrawGui(GuiManager element);
-    }
-
-
-
-    public class DefaultDrawVisitor : DrawVisitor //MISSING CODE HERE
-    {
-        SpriteBatch sprite_batch;
-        ContentManager content_manager;
-        Texture2D white_pixel;
-        SpriteFont default_font;
-
-        public DefaultDrawVisitor(SpriteBatch sprite_batch, ContentManager content_manager) {
-            this.sprite_batch = sprite_batch;
-            this.content_manager = content_manager;
-            white_pixel = content_manager.Load<Texture2D>("white_pixel");
-            default_font = content_manager.Load<SpriteFont>("arial");
+        public List(List<T> list) {
+            this.list = list;
         }
 
-        public void DrawButton(Button element) {
-            //MISSING CODE HERE
-        }
+        public List() { }
 
-        public void DrawLabel(Label element) {
-            sprite_batch.DrawString(default_font, element.content, new Vector2(element.top_left_corner.X, element.top_left_corner.Y), element.color);
-        }
-
-        public void DrawGui(GuiManager gui_manager) {
-
-            //MISSING CODE HERE
-        }
-    }
-
-
-    public interface UpdateVisitor {
-        //MISSING CODE HERE
-    }
-
-
-    public class DefaultUpdateVisitor : UpdateVisitor {
-
-        public void UpdateButton(Button element, float dt) {
-            var mouse = Mouse.GetState();
-            //MISSING CODE HERE
-            if (1 == 2) {
-                //MISSING CODE HERE
-            } else {
-                element.color = Color.White;
+        public Option<T> GetCurrent() {
+            if (current <= list.Count) {
+                return new Some<T>(list[current]);
             }
+
+            return new None<T>();
         }
 
-        public void UpdateLabel(Label element, float dt) {
-
+        public Option<T> GetNext() {
+            current++;
+            return this.GetCurrent();
         }
 
-        public void UpdateGui(GuiManager gui_manager, float dt) {
-            //MISSING CODE HERE
+        public void Reset() {
+            this.current = -1;
         }
     }
+
+    public class Point {
+	    public Point(float x, float y) {
+	        this.X = x;
+	        this.Y = y;
+	    }
+
+	    public float X { get; set; }
+	    public float Y { get; set; }
+    }
+
+
+
+
+
+
+
+	public interface Updateable {
+	    void Update(UpdateVisitor visitor, float dt);
+	}
+
+	public interface Drawable {
+	    void Draw(DrawVisitor visitor);
+	}
+
+
+	public interface DrawVisitor {
+	    void DrawButton(Button element);
+	    void DrawLabel(Label element);
+	    void DrawGui(GuiManager element);
+	}
+
+	public class DefaultDrawVisitor : DrawVisitor {
+	    SpriteBatch sprite_batch;
+	    ContentManager content_manager;
+	    Texture2D white_pixel;
+	    SpriteFont default_font;
+
+	    public DefaultDrawVisitor(SpriteBatch sprite_batch, ContentManager content_manager) {
+	        this.sprite_batch = sprite_batch;
+	        this.content_manager = content_manager;
+	        white_pixel = content_manager.Load<Texture2D>("white_pixel");
+	        default_font = content_manager.Load<SpriteFont>("arial");
+	    }
+
+	    public void DrawButton(Button element) {
+	        sprite_batch.Draw(
+	            white_pixel,
+	            new Rectangle(
+	                (int)element.top_left_corner.X,
+	                (int)element.top_left_corner.Y,
+	                (int)element.width,
+	                (int)element.height
+	            ),
+	            element.color
+	        );
+
+	        element.label.Draw(this);
+	    }
+
+	    public void DrawLabel(Label element) {
+	        sprite_batch.DrawString(default_font, element.content, new Vector2(element.top_left_corner.X, element.top_left_corner.Y), element.color);
+	    }
+
+	    public void DrawGui(GuiManager gui_manager) {
+	        //MISSING CODE HERE
+
+	        gui_manager.elements.Reset();
+	        while (true) //MISSING CODE
+	        {
+	            gui_manager.elements.GetCurrent().Visit(() => { }, item => { item.Draw(this); });
+	        }
+	    }
+	}
+
+
+	public interface UpdateVisitor {
+	    void UpdateButton(Button element, float dt);
+	    void UpdateLabel(Label element, float dt);
+	    void UpdateGui(GuiManager gui_manager, float dt);
+	}
+
+	public class DefaultUpdateVisitor : UpdateVisitor {
+
+	    public void UpdateButton(Button element, float dt) {
+	        var mouse = Mouse.GetState();
+
+	        if (mouse.LeftButton == ButtonState.Pressed) {
+	            if (element.is_intersecting(new Point(mouse.X, mouse.Y))) {
+	                element.color = Color.Blue;
+	                element.action();
+	            }
+	        } else {
+	            element.color = Color.White;
+	        }
+	    }
+
+	    public void UpdateLabel(Label element, float dt) {
+
+	    }
+
+	    public void UpdateGui(GuiManager gui_manager, float dt) {
+	        gui_manager.elements.Reset();
+	        while (1==1){} //MISSING CODE
+		}
+	}
 }
