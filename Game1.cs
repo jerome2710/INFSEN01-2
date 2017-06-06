@@ -15,6 +15,8 @@ namespace GUIapp {
         }
 
         GuiManager GuiManager;
+        InputManager InputManager;
+        DrawingManager DrawingManager;
         DrawVisitor DrawVisitor;
         UpdateVisitor UpdateVisitor;
 
@@ -22,14 +24,15 @@ namespace GUIapp {
             base.Initialize();
             this.IsMouseVisible = true;
             GuiManager = new GuiManager(() => Exit());
-            UpdateVisitor = new DefaultUpdateVisitor();
-
+            InputManager = new MonogameMouse();
+            UpdateVisitor = new DefaultUpdateVisitor(InputManager);
         }
 
         protected override void LoadContent() {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch(GraphicsDevice);
-            DrawVisitor = new DefaultDrawVisitor(spriteBatch, Content);
+            DrawingManager = new MonogameDrawingAdapter(spriteBatch, Content);
+            DrawVisitor = new DefaultDrawVisitor(DrawingManager);
         }
 
         protected override void Update(GameTime gameTime) {

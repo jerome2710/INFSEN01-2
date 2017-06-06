@@ -10,10 +10,10 @@ namespace GUIapp {
         public string content;
 
         public int size;
-        public Color color;
+        public Colour color;
         public Point top_left_corner;
 
-        public Label(string content, Point top_left_corner, int size, Color color) {
+        public Label(string content, Point top_left_corner, int size, Colour color) {
             this.size = size;
             this.color = color;
             this.content = content;
@@ -31,11 +31,11 @@ namespace GUIapp {
     public class Button : GuiElement {
         public float width, height;
         public Action action;
-        public Color color;
+        public Colour color;
         public Label label;
         public Point top_left_corner;
 
-        public Button(string text, Point top_left_corner, int size, Color color, float width, float height, Action action) {
+        public Button(string text, Point top_left_corner, int size, Colour color, float width, float height, Action action) {
             this.action = action;
             this.width = width;
             this.height = height;
@@ -65,11 +65,11 @@ namespace GUIapp {
         public GuiManager(System.Action exit) {
             
             elements = new ElementList<GuiElement>();
-            elements.Add(new Label("Hi Ahmed!", new Point(0, 0), 10, Color.Black));
-            elements.Add(new Button("Click me", new Point(0, 100), 10, Color.Black, 100, 30,
+            elements.Add(new Label("Hi Ahmed!", new Point(0, 0), 10, Colour.Black));
+            elements.Add(new Button("Click me", new Point(0, 100), 10, Colour.Black, 100, 30,
                 () => {
                     elements = new ElementList<GuiElement>();
-                    elements.Add(new Button("Exit", new Point(0, 0), 10, Color.Black, 100, 30,
+                    elements.Add(new Button("Exit", new Point(0, 0), 10, Colour.Black, 100, 30,
                       () => {
                               exit();
                           }
