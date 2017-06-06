@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
+using System.Collections.Generic;
 
 namespace GUIapp {
 
@@ -44,18 +45,26 @@ namespace GUIapp {
         void Reset();
     }
 
-    public class List<T> : Iterator<T> {
-        private List<T> list;
+    public class ElementList<T> : Iterator<T> {
+        private List<T> list = new List<T>();
         private int current = -1;
 
-        public List(List<T> list) {
+        public ElementList(List<T> list) {
             this.list = list;
         }
 
-        public List() { }
+        public ElementList() { }
+
+        public void Add(T option) {
+            this.list.Add(option);
+        }
 
         public Option<T> GetCurrent() {
-            if (current <= list.Count) {
+
+            // ugly AF
+            if (current == -1) { return new None<T>(); }
+
+            if (current < list.Count) {
                 return new Some<T>(list[current]);
             }
 
@@ -81,12 +90,6 @@ namespace GUIapp {
 	    public float X { get; set; }
 	    public float Y { get; set; }
     }
-
-
-
-
-
-
 
 	public interface Updateable {
 	    void Update(UpdateVisitor visitor, float dt);
@@ -136,11 +139,8 @@ namespace GUIapp {
 	    }
 
 	    public void DrawGui(GuiManager gui_manager) {
-	        //MISSING CODE HERE
-
 	        gui_manager.elements.Reset();
-	        while (true) //MISSING CODE
-	        {
+            while (gui_manager.elements.GetNext().Visit(() => false, _ => true)) {
 	            gui_manager.elements.GetCurrent().Visit(() => { }, item => { item.Draw(this); });
 	        }
 	    }
@@ -173,8 +173,11 @@ namespace GUIapp {
 	    }
 
 	    public void UpdateGui(GuiManager gui_manager, float dt) {
-	        gui_manager.elements.Reset();
-	        while (1==1){} //MISSING CODE
+            gui_manager.elements.Reset();
+
+            while (gui_manager.elements.GetNext().Visit(() => false, _ => true)) {
+                gui_manager.elements.GetCurrent().Visit(() => { }, item => { item.Update(this, dt); });
+            }
 		}
 	}
 }

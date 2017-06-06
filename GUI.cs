@@ -60,7 +60,7 @@ namespace GUIapp {
 
 
     public class GuiManager : Updateable, Drawable {
-        public List<GuiElement> elements;
+        public ElementList<GuiElement> elements;
 
         public GuiManager(System.Action exit) {
             
@@ -68,7 +68,7 @@ namespace GUIapp {
             elements.Add(new Label("Hi Ahmed!", new Point(0, 0), 10, Color.Black));
             elements.Add(new Button("Click me", new Point(0, 100), 10, Color.Black, 100, 30,
                 () => {
-                    elements = new List<GuiElement>();
+                    elements = new ElementList<GuiElement>();
                     elements.Add(new Button("Exit", new Point(0, 0), 10, Color.Black, 100, 30,
                       () => {
                               exit();
