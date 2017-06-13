@@ -4,6 +4,70 @@ using Microsoft.Xna.Framework;
 
 namespace GUIapp {
 
+    public abstract class GuiMenuCreator {
+        public abstract GuiManager Instantiate(string option, System.Action exit);
+    }
+
+    public class GuiConstructor : GuiMenuCreator {
+
+        public override GuiManager Instantiate(string option, System.Action exit) {
+
+            GuiManager guiManager = new GUIapp.GuiManager();
+
+            switch (option) {
+                case "1":
+
+                    LabelConstructor labelConstructor = new LabelConstructor();
+                    ButtonConstructor buttonConstructor = new ButtonConstructor();
+
+                    guiManager.elements = new ElementList<GuiElement>();
+                    guiManager.elements.Add(labelConstructor.Instantiate("Hi Ahmed!", new Point(0, 0), 10, Colour.Black));
+                    guiManager.elements.Add(buttonConstructor.Instantiate("Click me", new Point(0, 100), 10, Colour.Black, 100, 30,
+                        () => {
+                            guiManager.elements = new ElementList<GuiElement>();
+                            guiManager.elements.Add(buttonConstructor.Instantiate("Exit", new Point(0, 0), 10, Colour.Black, 100, 30,
+                              () => {
+                                  exit();
+                              }
+                             ));
+                        }
+                   ));
+                    break;
+
+                default:
+                    throw new NotImplementedException();
+            }
+
+            return guiManager;
+        }
+    }
+
+    public abstract class GuiElementCreator {
+        public abstract GuiElement Instantiate(string text, Point top_left_corner, int size, Colour color);
+        public abstract GuiElement Instantiate(string text, Point top_left_corner, int size, Colour color, float width, float height, Action action);
+    }
+
+    public class ButtonConstructor : GuiElementCreator {
+        public override GuiElement Instantiate(string text, Point top_left_corner, int size, Colour color) {
+            return new Button(text, top_left_corner, size, color, 40, 40, () => { });
+        }
+
+        public override GuiElement Instantiate(string text, Point top_left_corner, int size, Colour color, float width, float height, Action action) {
+            return new Button(text, top_left_corner, size, color, width, height, action);
+        }
+    }
+
+    public class LabelConstructor : GuiElementCreator
+    {
+        public override GuiElement Instantiate(string text, Point top_left_corner, int size, Colour color) {
+            return new Label(text, top_left_corner, size, color);
+        }
+
+        public override GuiElement Instantiate(string text, Point top_left_corner, int size, Colour color, float width, float height, Action action) {
+            return new Label(text, top_left_corner, size, color);
+        }
+    }
+
     public interface GuiElement : Drawable, Updateable { }
 
     public class Label : GuiElement {
@@ -47,7 +111,7 @@ namespace GUIapp {
         public void Draw(DrawVisitor visitor) {
             visitor.DrawButton(this);
         }
-       
+
         public bool is_intersecting(Point point) {
             return point.X > top_left_corner.X && point.Y > top_left_corner.Y &&
                    point.X < top_left_corner.X + width && point.Y < top_left_corner.Y + height;
@@ -61,22 +125,6 @@ namespace GUIapp {
 
     public class GuiManager : Updateable, Drawable {
         public ElementList<GuiElement> elements;
-
-        public GuiManager(System.Action exit) {
-            
-            elements = new ElementList<GuiElement>();
-            elements.Add(new Label("Hi Ahmed!", new Point(0, 0), 10, Colour.Black));
-            elements.Add(new Button("Click me", new Point(0, 100), 10, Colour.Black, 100, 30,
-                () => {
-                    elements = new ElementList<GuiElement>();
-                    elements.Add(new Button("Exit", new Point(0, 0), 10, Colour.Black, 100, 30,
-                      () => {
-                              exit();
-                          }
-                      ));
-                }
-           ));
-        }
 
         public void Draw(DrawVisitor visitor) {
             visitor.DrawGui(this);

@@ -23,7 +23,9 @@ namespace GUIapp {
         protected override void Initialize() {
             base.Initialize();
             this.IsMouseVisible = true;
-            GuiManager = new GuiManager(() => Exit());
+
+            GuiConstructor guiConstructor = new GuiConstructor();
+            GuiManager = guiConstructor.Instantiate("1", () => Exit());
             InputManager = new MonogameMouse();
             UpdateVisitor = new DefaultUpdateVisitor(InputManager);
         }
