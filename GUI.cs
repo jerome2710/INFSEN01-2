@@ -92,7 +92,14 @@ namespace GUIapp {
         public void Update(UpdateVisitor visitor, float dt) { }
     }
 
-    public class Button : GuiElement {
+    public abstract class GuiDecorator : GuiElement {
+        public abstract void Draw(DrawVisitor visitor);
+        public abstract void Update(UpdateVisitor visitor, float dt);
+
+        // missing code
+    }
+
+    public class Button : GuiDecorator {
         public float width, height;
         public Action action;
         public Colour color;
@@ -100,15 +107,21 @@ namespace GUIapp {
         public Point top_left_corner;
 
         public Button(string text, Point top_left_corner, int size, Colour color, float width, float height, Action action) {
-            this.action = action;
+
+			// missing code
+
+			this.action = action;
             this.width = width;
             this.height = height;
             this.color = color;
+
+
+
             this.top_left_corner = top_left_corner;
             label = new Label(text, top_left_corner, size, color);
         }
 
-        public void Draw(DrawVisitor visitor) {
+        public override void Draw(DrawVisitor visitor) {
             visitor.DrawButton(this);
         }
 
@@ -117,7 +130,7 @@ namespace GUIapp {
                    point.X < top_left_corner.X + width && point.Y < top_left_corner.Y + height;
         }
 
-        public void Update(UpdateVisitor visitor, float dt) {
+        public override void Update(UpdateVisitor visitor, float dt) {
             visitor.UpdateButton(this, dt);
         }
     }
