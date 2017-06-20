@@ -200,7 +200,7 @@ namespace GUIapp {
                 element.color
             );
 
-            element.label.Draw(this);
+            element.element.Draw(this);
         }
 
         public void DrawLabel(Label element) {
@@ -219,7 +219,6 @@ namespace GUIapp {
             }
         }
     }
-
 
     public interface UpdateVisitor {
         void UpdateButton(Button element, float dt);

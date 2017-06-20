@@ -68,16 +68,23 @@ namespace GUIapp {
         }
     }
 
-    public interface GuiElement : Drawable, Updateable { }
+	public abstract class GuiElement : Drawable, Updateable {
+		public Point top_left_corner;
+		public GuiElement(Point top_left_corner) {
+			this.top_left_corner = top_left_corner;
+		}
+		public abstract void Draw(DrawVisitor visitor);
+		public abstract void Update(UpdateVisitor visitor, float dt);
+
+	}
 
     public class Label : GuiElement {
         public string content;
 
         public int size;
         public Colour color;
-        public Point top_left_corner;
 
-        public Label(string content, Point top_left_corner, int size, Colour color) {
+        public Label(string content, Point top_left_corner, int size, Colour color) : base(top_left_corner) {
             this.size = size;
             this.color = color;
             this.content = content;
@@ -85,40 +92,33 @@ namespace GUIapp {
 
         }
 
-        public void Draw(DrawVisitor visitor) {
+        public override void Draw(DrawVisitor visitor) {
             visitor.DrawLabel(this);
         }
 
-        public void Update(UpdateVisitor visitor, float dt) { }
+        public override void Update(UpdateVisitor visitor, float dt) { }
     }
 
     public abstract class GuiDecorator : GuiElement {
-        public abstract void Draw(DrawVisitor visitor);
-        public abstract void Update(UpdateVisitor visitor, float dt);
 
-        // missing code
+        public GuiElement element;
+
+        public GuiDecorator(GuiElement element) : base(element.top_left_corner)
+        {
+            this.element = element;
+        }
     }
 
     public class Button : GuiDecorator {
         public float width, height;
         public Action action;
         public Colour color;
-        public Label label;
-        public Point top_left_corner;
 
-        public Button(string text, Point top_left_corner, int size, Colour color, float width, float height, Action action) {
-
-			// missing code
-
+        public Button(string text, Point top_left_corner, int size, Colour color, float width, float height, Action action) : base(new Label(text, top_left_corner, size, Colour.Black)) {
 			this.action = action;
             this.width = width;
             this.height = height;
             this.color = color;
-
-
-
-            this.top_left_corner = top_left_corner;
-            label = new Label(text, top_left_corner, size, color);
         }
 
         public override void Draw(DrawVisitor visitor) {
